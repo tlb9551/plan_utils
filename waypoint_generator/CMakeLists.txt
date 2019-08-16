@@ -23,8 +23,8 @@ find_package(catkin REQUIRED COMPONENTS
 )
 catkin_package()
 
-include_directories(include)
 include_directories(
+    include
   ${catkin_INCLUDE_DIRS}
 )
 
