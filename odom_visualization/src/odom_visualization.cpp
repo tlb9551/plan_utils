@@ -11,6 +11,7 @@
 #include "armadillo"
 #include "pose_utils.h"
 #include "quadrotor_msgs/PositionCommand.h"
+#include <eigen3/Eigen/Dense>
 
 using namespace arma;
 using namespace std;
@@ -392,11 +393,30 @@ void cmd_callback(const quadrotor_msgs::PositionCommand cmd)
   pose(0) = cmd.position.x;
   pose(1) = cmd.position.y;
   pose(2) = cmd.position.z;
+
+  Eigen::Vector3d acc ;
+  acc<<cmd.acceleration.x,cmd.acceleration.y,cmd.acceleration.z;
+  Eigen::Vector3d g;
+  g<<0.0,0.0,-9.8;
+  Eigen::Vector3d e3 = (acc-g).normalized();
+
+  double yaw = cmd.yaw;
+  Eigen::Vector3d e1_;
+  e1_<<cos(yaw),sin(yaw),0.0;
+  Eigen::Vector3d e2;
+  e2 = e3.cross(e1_);
+  Eigen::Vector3d e1  = e2.cross(e3);
+  Eigen::Matrix3d R_m;
+  R_m.col(0) = e1;
+  R_m.col(1) = e2;
+  R_m.col(2) = e3;
+  Eigen::Quaterniond R_q(R_m);
+
   colvec q(4);
-  q(0)    = 1.0;
-  q(1)    = 0.0;
-  q(2)    = 0.0;
-  q(3)    = 0.0;
+  q(0)    = R_q.w();
+  q(1)    = R_q.x();
+  q(2)    = R_q.y();
+  q(3)    = R_q.z();
   pose.rows(3,5) = R_to_ypr(quaternion_to_R(q));
   
   // Mesh model                                                  

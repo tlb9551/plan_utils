@@ -13,7 +13,16 @@ uint32 action
 
 uint32 order
 float64 delt_t
+float64 excuting_t
+
+geometry_msgs/Point[] traj_pos
+geometry_msgs/Point[] traj_vel
+geometry_msgs/Point[] traj_acc
+geometry_msgs/Point[] traj_jek
+geometry_msgs/Point[] traj_snp
+
 
 float64[] control_pt_x
 float64[] control_pt_y
 float64[] control_pt_z
+
